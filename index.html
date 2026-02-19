@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>StudyFlow – Sign In</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background:var(--primary); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:32px 20px; }
+  .login-top { text-align:center; margin-bottom:32px; }
+  .login-logo { width:80px; height:80px; background:rgba(255,255,255,0.15); border-radius:24px; display:flex; align-items:center; justify-content:center; font-size:38px; margin:0 auto 16px; backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); }
+  .login-title { font-family:'Sora',sans-serif; font-size:30px; font-weight:700; color:#fff; }
+  .login-sub { color:rgba(255,255,255,0.6); font-size:14px; margin-top:4px; }
+  .login-card { background:#fff; border-radius:24px; padding:28px 24px; width:100%; max-width:400px; box-shadow:var(--shadow-lg); }
+  .card-title { font-family:'Sora',sans-serif; font-size:18px; font-weight:700; margin-bottom:4px; color:var(--text); }
+  .card-sub { font-size:13px; color:var(--text-muted); margin-bottom:22px; }
+  .login-error { background:#fdeaea; border:1px solid #f5b5b5; color:var(--danger); border-radius:var(--radius-sm); padding:10px 14px; font-size:13px; margin-bottom:14px; display:none; border-left:3px solid var(--danger); }
+  .login-error.show { display:block; }
+  .login-hint { font-size:11px; color:var(--text-muted); text-align:center; margin-top:14px; line-height:1.6; }
+  .login-hint strong { color:var(--primary); }
+  .divider { display:flex; align-items:center; gap:10px; margin:16px 0; }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .divider span { font-size:11px; color:var(--text-light); font-weight:600; }
+  .loading-overlay { position:fixed; inset:0; background:var(--primary); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; opacity:0; pointer-events:none; transition:opacity .3s; }
+  .loading-overlay.show { opacity:1; pointer-events:all; }
+  .loading-logo { font-size:48px; margin-bottom:16px; animation:pulse 1s ease-in-out infinite; }
+  .loading-text { font-family:'Sora',sans-serif; font-size:16px; font-weight:600; color:#fff; opacity:.8; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .pass-wrap { position:relative; }
+  .pass-wrap input { padding-right:44px; }
+  .toggle-pass { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:18px; padding:4px; }
+</style>
+</head>
+<body>
+
+<div class="login-top">
+  <div class="login-logo">📚</div>
+  <div class="login-title">StudyFlow</div>
+  <div class="login-sub">Your academic companion</div>
+</div>
+
+<div class="login-card">
+  <div class="card-title">Welcome back 👋</div>
+  <div class="card-sub">Sign in to access your courses</div>
+
+  <div class="login-error" id="login-error">
+    ❌ Wrong Student ID or password. Please try again.
+  </div>
+
+  <div class="form-group">
+    <label>Student ID</label>
+    <input type="text" id="login-id" placeholder="e.g. 6500000001" value="6500000001" autocomplete="username" />
+  </div>
+  <div class="form-group">
+    <label>Password</label>
+    <div class="pass-wrap">
+      <input type="password" id="login-pass" placeholder="Enter your password" value="password123" autocomplete="current-password" />
+      <button class="toggle-pass" onclick="togglePass()" type="button">👁️</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="doLogin()" id="login-btn">Sign In</button>
+
+  <div class="login-hint">
+    Demo credentials<br>
+    ID: <strong>6500000001</strong> &nbsp;/&nbsp; Password: <strong>password123</strong>
+  </div>
+</div>
+
+<!-- Loading transition overlay -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">📚</div>
+  <div class="loading-text">Signing you in…</div>
+</div>
+
+<script>
+  function doLogin() {
+    const id = document.getElementById('login-id').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const err = document.getElementById('login-error');
+
+    if (id === '6500000001' && pass === 'password123') {
+      err.classList.remove('show');
+      // Save login state
+      sessionStorage.setItem('lms_logged_in', '1');
+      sessionStorage.setItem('lms_user', 'Giselle');
+      // Show loading transition then navigate
+      document.getElementById('loading').classList.add('show');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+    } else {
+      err.classList.add('show');
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-pass').focus();
+    }
+  }
+
+  function togglePass() {
+    const inp = document.getElementById('login-pass');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  document.getElementById('login-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('login-id').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('login-pass').focus();
+  });
+
+  // If already logged in, skip login
+  if (sessionStorage.getItem('lms_logged_in')) {
+    window.location.href = 'dashboard.html';
+  }
+</script>
+</body>
+</html>
